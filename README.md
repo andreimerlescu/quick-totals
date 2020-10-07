@@ -150,21 +150,15 @@ slug = Qtc.slug_for_class self.class
 @redis.set slug, self.count, Qtc.config.expire_in
 self.qt_relationships.each do |r|
   if defined?(self.send(:"#{r}"))
-    @redis.set slug, 
+    @redis.set slug, self.send(:"#{r}")
   elsif defined?(self.send(:"qt_#{r}"))
-    @redis.set slug, 
+    @redis.set slug, self.send(:"qt_#{r}")
   else
     if Qtc.config.hard_failure
       raise NoMethodError, "#{self.class.to_s} ##{self.identifier} missing :qt_#{r}"
     end #if
 
-    if Qtc.config.debug
-      if defined? ap
-        ap self
-      else
-        puts self.inspect
-      end #/if
-    end #/if
+    ( defined?(ap) ? ap(self) : puts(self.inspect) ) if Qtc.config.debug
   end #/if-elsif-else
 end #/each
 ```
